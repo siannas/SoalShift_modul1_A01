@@ -9,6 +9,7 @@ index |
 [nomor 5](#no5) |
 
 ### <a name="no1" ></a>Nomor 1
+---
 Anda diminta tolong oleh teman anda untuk mengembalikan filenya yang telah
 dienkripsi oleh seseorang menggunakan bash script, file yang dimaksud adalah
 nature.zip. Karena terlalu mudah kalian memberikan syarat akan membuka seluruh
@@ -24,6 +25,31 @@ done
 ```
 14 14 14 2 5 /bin/bash /home/vagrant/prak1soal1.sh
 ```
+__penjelasan__
+
+asumsi kita telah mendownload *`nature.zip`* . 
+file tersebut berisi gambar-gambar yang telah terenkripsi dengan `base64`
+selanjutnya membuat folder baru bernama `nature` dan di dalam folder tersebut kita buatkan folder dengan nama `hasil` .
+barulah membuat file script bash dengan nama `prak1soal1.sh`
+
+``` bash
+for f in ./nature/*; do
+        ...
+done
+```
+syntax di atas digunakan untuk fungsi *for each* pada semua file foto yang ada di dalam folder nature.
+
+``` bash
+hexdump -C "$f"
+done
+```
+syntax di atas digunakan untuk menjaadikan *hexadeximal* .
+
+``` bash
+base64 -d "$f" | xxd -r > ./nature/hasil/$(basename $f .jpg)_baru.jpg
+done
+```
+syntax di atas digunakan untuk men*decode* file gambar yang telah di*hexdump* lalu di*reverse* ke bentuk format gambar kembali ke *binary* .
 
 ### <a name="no2" ></a>Nomor 2
 Anda merupakan pegawai magang pada sebuah perusahaan retail, dan anda diminta
