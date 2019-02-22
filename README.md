@@ -179,8 +179,17 @@ kriteria berikut:
 ``` shell
 awk '/cron/ || /CRON/ && !/sudo/ && !/SUDO/' /var/log/syslog | awk 'NF < 13' >> /home/vagrant/modul1/syslogno5.log
 ```
-=======
-Setting crontab:
+
+__penjelasan__
+
+``` shell
+awk '/cron/ || /CRON/ && !/sudo/ && !/SUDO/' /var/log/syslog
+```
+Perintah awk di atas untuk mencari data pada *`syslog`* dengan kata kunci **cron** dan bukan **sudo** dan harus *case insensitive* .
+
+barulah kita tampilkan line syslog degan jumlah field kurang dari 13 dan dimasukkan ke dalam file `/home/vagrant/modul1/syslogno5.log`
+
+untuk mensetting crontab:
 Every 6th minutes, from 2 through 30.
 
 ``` shell
