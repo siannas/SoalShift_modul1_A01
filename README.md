@@ -48,10 +48,13 @@ done
 ```
 syntax di atas digunakan untuk men*decode* file gambar yang telah di*hexdump* lalu di*reverse* ke bentuk format gambar kembali ke *binary* .
 
-barulah kita masukkan ke dalam crontab
+barulah kita masukkan ke dalam crontab untuk pukul 14:14 pada tanggal 14 Februari atau hari tersebut adalah harijumat pada bulan Februari
 ```
 14 14 14 2 5 /bin/bash /home/vagrant/prak1soal1.sh
 ```
+salah satu hasil gambarnya
+![alt text](https://raw.githubusercontent.com/siannas/SoalShift_modul1_A01/master/assets/45598582_271525256867288_4803901167934701139_n_baru.jpg "Gambar_hasil_1")
+
 
 ### <a name="no2" ></a>Nomor 2
 ---
@@ -87,6 +90,52 @@ do
         echo $temp | awk -v cmpr="$element" 'BEGIN {FS=";" ; RS="|" } ( $2==cmpr ){print $3}' | head -1
 done
 ```
+__penjelasan__
+
+asumsi kita telah mendownload *`assets/WA_Sales_Products_2012-14.csv`* . 
+File tersebut berisi sekumpulan data Produk, kuantitas, negara , dan lain-lain. 
+Pertama tama kita perlu mendapatkan data yang dibutuhkan.
+``` shell
+file="assets/WA_Sales_Products_2012-14.csv"
+temp=`awk 'BEGIN { FS = ","; OFS= ";";ORS="|"} ; { if($7==2012) print $1,$4,$6,$10}' < $file | sort -t ';' -k 4 -V -r `
+```
+syntax di atas digunakan untuk mengambil file yang dimaksud lalu diambil data-data yang diperlukan yaitu negara, produk, produk line, dan kuantitas. 
+Semua data tersebut kemudian diurutkan dari kuantitas terbersar hingga terkecil dan disimpan dalam variabel *temp* untuk digunakan di pertanyaan berikutnya.
+
+``` shell
+# 2.a
+echo "Nomor 2A"
+echo $temp | awk 'BEGIN { FS = ";" ; RS="|"} NR>1{print $1} NR==2{exit}'
+```
+Pada nomor 2a cukup dengan menampilkan nama negara pada urutan teratas yang ada dalam variabel *temp* .
+
+``` shell
+# 2.b
+echo ""
+echo "Nomor 2B"
+produk=`echo $temp | awk 'BEGIN {FS=";" ; RS="|" ; ORS="|" } ( NR>1 && !seen[$2]++ ){print $2}' | awk 'BEGIN{FS=";" ; RS="|" ; ORS="|"}{print $0} NR==3{exit}'`
+echo $produk | awk 'BEGIN {FS=";" ; RS="|"} {print}'
+```
+Pada nomor 2b kita perlu mengolah data yang ada dalam variabel *temp* . data yang dimaksud diambil pada field `product line` yaitu pada field ke `2` .
+jangan lupa tambahkan kondisi `!seen[$2]++` agar muncul secara identik.
+Barulah kita tampilkan hasil sebanyak tiga teratas saja. Hasil tersebut kita masukkan ke dalam variabel produk agar bisa digunakan pada soal berikutnya.
+
+``` shell
+# 2.c
+echo "Nomor 2C"
+IFS='|' read -r -a array <<< $produk
+```
+syntax di atas digunakan untuk membuat array dengan nama *array* dari data product line dalam variabel produk.
+
+``` shell
+for element in "${array[@]}"
+do
+        echo $temp | awk -v cmpr="$element" 'BEGIN {FS=";" ; RS="|" } ( $2==cmpr ){print $3}' | head -1
+done
+```
+Berikutnya kita tampilkan produk teratas pada setiap produk line dengan menggunakan `for`. 
+
+
 
 ### <a name="no3" ></a>Nomor 3
 ---
@@ -99,6 +148,7 @@ sebagai berikut:
 * b. Jika file password1.txt sudah ada maka password acak baru akan disimpan pada file bernama password2.txt dan begitu seterusnya.
 * c. Urutan nama file tidak boleh ada yang terlewatkan meski filenya dihapus.
 * d. Password yang dihasilkan tidak boleh sama.
+
 
 
 ### <a name="no4" ></a>Nomor 4
@@ -115,6 +165,7 @@ berikut:
 * e. dan buatkan juga bash script untuk dekripsinya.
 
 
+
 ### <a name="no5" ></a>Nomor 5
 ---
 Buatlah sebuah script bash untuk menyimpan record dalam syslog yang memenuhi
@@ -127,4 +178,7 @@ kriteria berikut:
 
 ``` shell
 awk '/cron/ || /CRON/ && !/sudo/ && !/SUDO/' /var/log/syslog | awk 'NF < 13' >> /home/vagrant/modul1/syslogno5.log
+```
+``` shell
+2-30/6 * * * * /bin/bash /home/vagrant/prak1soal5.sh
 ```
