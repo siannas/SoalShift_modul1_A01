@@ -179,6 +179,10 @@ kriteria berikut:
 ``` shell
 awk '/cron/ || /CRON/ && !/sudo/ && !/SUDO/' /var/log/syslog | awk 'NF < 13' >> /home/vagrant/modul1/syslogno5.log
 ```
+=======
+Setting crontab:
+Every 6th minutes, from 2 through 30.
+
 ``` shell
 2-30/6 * * * * /bin/bash /home/vagrant/prak1soal5.sh
 ```
