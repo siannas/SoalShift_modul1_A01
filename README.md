@@ -22,9 +22,6 @@ for f in ./nature/*; do
         base64 -d "$f" | xxd -r > ./nature/hasil/$(basename $f .jpg)_baru.jpg
 done
 ```
-```
-14 14 14 2 5 /bin/bash /home/vagrant/prak1soal1.sh
-```
 __penjelasan__
 
 asumsi kita telah mendownload *`nature.zip`* . 
@@ -51,7 +48,13 @@ done
 ```
 syntax di atas digunakan untuk men*decode* file gambar yang telah di*hexdump* lalu di*reverse* ke bentuk format gambar kembali ke *binary* .
 
+barulah kita masukkan ke dalam crontab
+```
+14 14 14 2 5 /bin/bash /home/vagrant/prak1soal1.sh
+```
+
 ### <a name="no2" ></a>Nomor 2
+---
 Anda merupakan pegawai magang pada sebuah perusahaan retail, dan anda diminta
 untuk memberikan laporan berdasarkan file WA_Sales_Products_2012-14.csv.
 Laporan yang diminta berupa:
@@ -86,6 +89,7 @@ done
 ```
 
 ### <a name="no3" ></a>Nomor 3
+---
 Buatlah sebuah script bash yang dapat menghasilkan password secara acak
 sebanyak 12 karakter yang terdapat huruf besar, huruf kecil, dan angka. Password
 acak tersebut disimpan pada file berekstensi .txt dengan ketentuan pemberian nama
@@ -98,6 +102,7 @@ sebagai berikut:
 
 
 ### <a name="no4" ></a>Nomor 4
+---
 Lakukan backup file syslog setiap jam dengan format nama file “jam:menit tanggal-
 bulan-tahun”. Isi dari file backup terenkripsi dengan konversi huruf (string
 manipulation) yang disesuaikan dengan jam dilakukannya backup misalkan sebagai
@@ -111,6 +116,7 @@ berikut:
 
 
 ### <a name="no5" ></a>Nomor 5
+---
 Buatlah sebuah script bash untuk menyimpan record dalam syslog yang memenuhi
 kriteria berikut:
 
