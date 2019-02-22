@@ -1,6 +1,14 @@
 # SoalShift_modul1_A01
 
-### Nomor 1
+index |
+--- | 
+[nomor 1](#no1) |
+[nomor 2](#no2) |
+[nomor 3](#no3) |
+[nomor 4](#no4) |
+[nomor 5](#no5) |
+
+### <a name="no1" ></a>Nomor 1
 Anda diminta tolong oleh teman anda untuk mengembalikan filenya yang telah
 dienkripsi oleh seseorang menggunakan bash script, file yang dimaksud adalah
 nature.zip. Karena terlalu mudah kalian memberikan syarat akan membuka seluruh
@@ -17,7 +25,7 @@ done
 14 14 14 2 5 /bin/bash /home/vagrant/prak1soal1.sh
 ```
 
-### Nomor 2
+### <a name="no2" ></a>Nomor 2
 Anda merupakan pegawai magang pada sebuah perusahaan retail, dan anda diminta
 untuk memberikan laporan berdasarkan file WA_Sales_Products_2012-14.csv.
 Laporan yang diminta berupa:
@@ -51,7 +59,7 @@ do
 done
 ```
 
-### Nomor 3
+### <a name="no3" ></a>Nomor 3
 Buatlah sebuah script bash yang dapat menghasilkan password secara acak
 sebanyak 12 karakter yang terdapat huruf besar, huruf kecil, dan angka. Password
 acak tersebut disimpan pada file berekstensi .txt dengan ketentuan pemberian nama
@@ -63,7 +71,7 @@ sebagai berikut:
 * d. Password yang dihasilkan tidak boleh sama.
 
 
-### Nomor 4
+### <a name="no4" ></a>Nomor 4
 Lakukan backup file syslog setiap jam dengan format nama file “jam:menit tanggal-
 bulan-tahun”. Isi dari file backup terenkripsi dengan konversi huruf (string
 manipulation) yang disesuaikan dengan jam dilakukannya backup misalkan sebagai
@@ -76,7 +84,7 @@ berikut:
 * e. dan buatkan juga bash script untuk dekripsinya.
 
 
-### Nomor 5
+### <a name="no5" ></a>Nomor 5
 Buatlah sebuah script bash untuk menyimpan record dalam syslog yang memenuhi
 kriteria berikut:
 
