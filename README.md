@@ -142,8 +142,6 @@ sebagai berikut:
 * c. Urutan nama file tidak boleh ada yang terlewatkan meski filenya dihapus.
 * d. Password yang dihasilkan tidak boleh sama.
 
-__penjelasan__
-
 ``` shell
 #!/bin/bash
 file=/home/vagrant/genpass/password
@@ -202,6 +200,54 @@ echo "$password" >$file$i.txt
 #echo "$password"
 ```
 
+__penjelasan__
+
+``` shell
+password="$(dd if=/dev/urandom|tr -dc A-Za-z0-9|head -c 12)"
+```
+syntax diatas digunakan untuk membuat password acak
+
+``` shell
+for (( i=0; i<${#password}; i++)); do
+        kata="${password:i:1}"
+        #echo "$kata"
+        if [[ $kata =~ ^[A-Z]+$ ]];
+            then
+            let "bsr += 1"
+            fi
+        if [[ $kata =~ ^[a-z]+$ ]];
+            then
+            let "kcl += 1"
+            fi
+        if [[ $kata =~ ^[0-9]+$ ]];
+            then
+            let "angka += 1"
+            fi
+    done
+```
+Fungsi iterasi di atas untuk mengecek apakah password sudah mengandung angka, huruf besar, dan huruf kecil
+
+``` shell
+for f in $file*; do
+        read -r line < $f
+        #echo $line
+        if [[ $kata = $line ]]
+        then
+            let "ok = 0"
+        fi
+    done
+```
+barulah kita cek apakah password sudah ada sebelumnya atau tidak, jika ya maka generate password lagi
+
+``` shell
+i=1
+while [ -f "$file$i.txt" ]
+do
+        let i++
+done
+echo "$password" >$file$i.txt
+```
+selanjutnya kita simpan password tersebut
 
 ### <a name="no4" ></a>Nomor 4
 ---
@@ -234,6 +280,14 @@ while read -r line ; do
         fi
 done < '/var/log/syslog'
 ```
+--Penjelasan--
+
+``` shell
+echo "$line" | tr [a-zA-Z] ["${lw[a]}"-za-"${lw[b]}""${hi[a]}"-ZA-"${hi[b]}"] >> encryptedsyslog/"$fname"
+```
+
+fungsi utama yang bekerja pada script ini adalah syntax di atas. ia akan menkonversi alphabet menjadi huruf ke-jam setelah huruf tersebut.
+
 
 ### <a name="no5" ></a>Nomor 5
 ---
