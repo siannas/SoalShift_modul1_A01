@@ -1,1 +1,1 @@
-awk 'BEGIN {IGNORECASE = 1} /cron/ && !/sudo/ ' /var/log/syslog | awk 'NF < 13' >> /home/vagrant/modul1/syslogno5.logawk 'BEGIN {IGNORECASE = 1} /cron/ && !/sudo/ ' /var/log/syslog | awk 'NF < 13'
+awk 'BEGIN {IGNORECASE = 1} /cron/ && !/sudo/ ' /var/log/syslog | awk 'NF < 13' >> /home/vagrant/modul1/syslogno5.log

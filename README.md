@@ -69,27 +69,24 @@ Laporan yang diminta berupa:
 ``` shell
 file="assets/WA_Sales_Products_2012-14.csv"
 
-temp=`awk 'BEGIN { FS = ","; OFS= ";";ORS="|"} ; { if($7==2012) print $1,$4,$6,$10}' < $file | sort -t ';' -k 4 -V -r `
+IFS=
+temp=$(awk 'BEGIN { FS = "," ; OFS = ";" } ; $7 ~ /2012/ { print $1,$4,$6,$10,$7}' < $file | sort -t ';' -k 4 -V -r)
+country=$(echo $temp | awk 'BEGIN { FS = ";" } ; {print $1} NR>0{exit}')
 
-# 2.a
+echo ""
 echo "Nomor 2A"
-echo $temp | awk 'BEGIN { FS = ";" ; RS="|"} NR>1{print $1} NR==2{exit}'
+echo "$country"
 
-# 2.b
+produk=$(echo $temp | awk -v negara="$country" 'BEGIN { FS= ";" } ;  $1 ~ negara && !seen[$2]++  {print $2}' | awk '{print $0} NR>2{exit}')
 echo ""
 echo "Nomor 2B"
-produk=`echo $temp | awk 'BEGIN {FS=";" ; RS="|" ; ORS="|" } ( NR>1 && !seen[$2]++ ){print $2}' | awk 'BEGIN{FS=";" ; RS="|" ; ORS="|"}{print $0} NR==3{exit}'`
-echo $produk | awk 'BEGIN {FS=";" ; RS="|"} {print}'
+echo "$produk"
 
-# 2.c
+echo ""
 echo "Nomor 2C"
-IFS='|' read -r -a array <<< $produk
-
-for element in "${array[@]}"
-do
-        echo $temp | awk -v cmpr="$element" 'BEGIN {FS=";" ; RS="|" } ( $2==cmpr ){print $3}' | head -1
-done
+echo $temp | awk -v negara="$country" 'BEGIN { FS= ";" } ;  $1 ~ negara && ($2 ~ /Personal Accessories/ || $2 ~ /Camping Equipment/ || $2 ~ /Outdoor Protection/) && !seen[$3]++  {print $3}' | awk '{print} NR>2{exit}' 
 ```
+
 __penjelasan__
 
 asumsi kita telah mendownload *`assets/WA_Sales_Products_2012-14.csv`* . 
@@ -97,7 +94,9 @@ File tersebut berisi sekumpulan data Produk, kuantitas, negara , dan lain-lain.
 Pertama tama kita perlu mendapatkan data yang dibutuhkan.
 ``` shell
 file="assets/WA_Sales_Products_2012-14.csv"
-temp=`awk 'BEGIN { FS = ","; OFS= ";";ORS="|"} ; { if($7==2012) print $1,$4,$6,$10}' < $file | sort -t ';' -k 4 -V -r `
+
+IFS=
+temp=$(awk 'BEGIN { FS = "," ; OFS = ";" } ; $7 ~ /2012/ { print $1,$4,$6,$10,$7}' < $file | sort -t ';' -k 4 -V -r)
 ```
 syntax di atas digunakan untuk mengambil file yang dimaksud lalu diambil data-data yang diperlukan yaitu negara, produk, produk line, dan kuantitas. 
 Semua data tersebut kemudian diurutkan dari kuantitas terbersar hingga terkecil dan disimpan dalam variabel *temp* untuk digunakan di pertanyaan berikutnya.
@@ -105,7 +104,8 @@ Semua data tersebut kemudian diurutkan dari kuantitas terbersar hingga terkecil 
 ``` shell
 # 2.a
 echo "Nomor 2A"
-echo $temp | awk 'BEGIN { FS = ";" ; RS="|"} NR>1{print $1} NR==2{exit}'
+country=$(echo $temp | awk 'BEGIN { FS = ";" } ; {print $1} NR>0{exit}')
+echo "$country"
 ```
 Pada nomor 2a cukup dengan menampilkan nama negara pada urutan teratas yang ada dalam variabel *temp* .
 
@@ -113,8 +113,8 @@ Pada nomor 2a cukup dengan menampilkan nama negara pada urutan teratas yang ada 
 # 2.b
 echo ""
 echo "Nomor 2B"
-produk=`echo $temp | awk 'BEGIN {FS=";" ; RS="|" ; ORS="|" } ( NR>1 && !seen[$2]++ ){print $2}' | awk 'BEGIN{FS=";" ; RS="|" ; ORS="|"}{print $0} NR==3{exit}'`
-echo $produk | awk 'BEGIN {FS=";" ; RS="|"} {print}'
+produk=$(echo $temp | awk -v negara="$country" 'BEGIN { FS= ";" } ;  $1 ~ negara && !seen[$2]++  {print $2}' | awk '{print $0} NR>2{exit}')
+echo "$produk"
 ```
 Pada nomor 2b kita perlu mengolah data yang ada dalam variabel *temp* . data yang dimaksud diambil pada field `product line` yaitu pada field ke `2` .
 jangan lupa tambahkan kondisi `!seen[$2]++` agar muncul secara identik.
@@ -122,18 +122,11 @@ Barulah kita tampilkan hasil sebanyak tiga teratas saja. Hasil tersebut kita mas
 
 ``` shell
 # 2.c
+echo ""
 echo "Nomor 2C"
-IFS='|' read -r -a array <<< $produk
+echo $temp | awk -v negara="$country" 'BEGIN { FS= ";" } ;  $1 ~ negara && ($2 ~ /Personal Accessories/ || $2 ~ /Camping Equipment/ || $2 ~ /Outdoor Protection/) && !seen[$3]++  {print $3}' | awk '{print} NR>2{exit}' 
 ```
-syntax di atas digunakan untuk membuat array dengan nama *array* dari data product line dalam variabel produk.
-
-``` shell
-for element in "${array[@]}"
-do
-        echo $temp | awk -v cmpr="$element" 'BEGIN {FS=";" ; RS="|" } ( $2==cmpr ){print $3}' | head -1
-done
-```
-Berikutnya kita tampilkan produk teratas pada setiap produk line dengan menggunakan `for`. 
+Berikutnya kita tampilkan produk teratas yang termasuk ke dalam ketiga produk line. 
 
 
 
@@ -152,35 +145,61 @@ sebagai berikut:
 __penjelasan__
 
 ``` shell
-password="$(dd if=/dev/urandom|tr -dc A-Za-z0-9|head -c 12)"
-kcl=0
-bsr=0
-angka=0
-for kata in $(seq 1 ${#password}); do
-    echo "$kata: ${password:kata-1:1}"
-    if [[ $kata == [A-Z] ]];
+#!/bin/bash
+file=/home/vagrant/genpass/password
+
+while true
+do
+    ok=1
+    password="$(dd if=/dev/urandom|tr -dc A-Za-z0-9|head -c 12)"
+    #cek huruf besar dan kecil
+    #echo "$password"
+    kcl=0
+    bsr=0
+    angka=0
+    for (( i=0; i<${#password}; i++)); do
+        kata="${password:i:1}"
+        #echo "$kata"
+        if [[ $kata =~ ^[A-Z]+$ ]];
+            then
+            let "bsr += 1"
+            fi
+        if [[ $kata =~ ^[a-z]+$ ]];
+            then
+            let "kcl += 1"
+            fi
+        if [[ $kata =~ ^[0-9]+$ ]];
+            then
+            let "angka += 1"
+            fi
+    done
+    #echo "$kcl $bsr $angka"
+
+    #cek apakah password sudah ada
+    for f in $file*; do
+        read -r line < $f
+        #echo $line
+        if [[ $kata = $line ]]
         then
-        let "bsr += 1"
+            let "ok = 0"
         fi
-    if [[ $kata == [a-z] ]];
-        then
-        let "kcl += 1"
-        fi
-    if [[ $kata == [0-9] ]];
-        then
-        let "angka += 1"
-        fi
+    done
+    
+    if [[ $ok -eq 1 ]]
+    then
+        break
+    fi
 done
-#echo "$kcl $bsr $angka"
 
 #untuk save file
 i=1
-file=/home/vagrant/genpass/password
+#file=/home/vagrant/genpass/password
 while [ -f "$file$i.txt" ]
 do
         let i++
 done
 echo "$password" >$file$i.txt
+#echo "$password"
 ```
 
 
@@ -197,7 +216,24 @@ berikut:
 * d. Backup file syslog setiap jam.
 * e. dan buatkan juga bash script untuk dekripsinya.
 
+``` shell
+lw=( {a..z} )
+hi=( {A..Z} )
 
+waktu=$(date +"%H")
+fname=$(date +"%H:%M %d-%m-%Y")
+
+a=$((waktu%26))
+b=$((a-1))
+
+while read -r line ; do
+        if [ $a -ne 0 ]; then
+                echo "$line" | tr [a-zA-Z] ["${lw[a]}"-za-"${lw[b]}""${hi[a]}"-ZA-"${hi[b]}"] >> encryptedsyslog/"$fname"
+        else
+                echo "$line" >> encryptedsyslog/"$fname"
+        fi
+done < '/var/log/syslog'
+```
 
 ### <a name="no5" ></a>Nomor 5
 ---
@@ -210,13 +246,13 @@ kriteria berikut:
 * d. Jalankan script tadi setiap 6 menit dari menit ke 2 hingga 30, contoh 13:02, 13:08, 13:14, dst.
 
 ``` shell
-awk '/cron/ || /CRON/ && !/sudo/ && !/SUDO/' /var/log/syslog | awk 'NF < 13' >> /home/vagrant/modul1/syslogno5.log
+awk 'BEGIN {IGNORECASE = 1} /cron/ && !/sudo/ ' /var/log/syslog | awk 'NF < 13' >> /home/vagrant/modul1/syslogno5.log
 ```
 
 __penjelasan__
 
 ``` shell
-awk '/cron/ || /CRON/ && !/sudo/ && !/SUDO/' /var/log/syslog
+awk 'BEGIN {IGNORECASE = 1} /cron/ && !/sudo/ ' /var/log/syslog 
 ```
 Perintah awk di atas untuk mencari data pada *`syslog`* dengan kata kunci **cron** dan bukan **sudo** dan harus *case insensitive* .
 

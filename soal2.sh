@@ -1,22 +1,18 @@
 file="assets/WA_Sales_Products_2012-14.csv"
 
-temp=`awk 'BEGIN { FS = ","; OFS= ";";ORS="|"} ; { if($7==2012) print $1,$4,$6,$10}' < $file | sort -t ';' -k 4 -V -r `
+IFS=
+temp=$(awk 'BEGIN { FS = "," ; OFS = ";" } ; $7 ~ /2012/ { print $1,$4,$6,$10,$7}' < $file | sort -t ';' -k 4 -V -r)
+country=$(echo $temp | awk 'BEGIN { FS = ";" } ; {print $1} NR>0{exit}')
 
-# 2.a
+echo ""
 echo "Nomor 2A"
-echo $temp | awk 'BEGIN { FS = ";" ; RS="|"} NR>1{print $1} NR==2{exit}'
+echo "$country"
 
-# 2.b
+produk=$(echo $temp | awk -v negara="$country" 'BEGIN { FS= ";" } ;  $1 ~ negara && !seen[$2]++  {print $2}' | awk '{print $0} NR>2{exit}')
 echo ""
 echo "Nomor 2B"
-produk=`echo $temp | awk 'BEGIN {FS=";" ; RS="|" ; ORS="|" } ( NR>1 && !seen[$2]++ ){print $2}' | awk 'BEGIN{FS=";" ; RS="|" ; ORS="|"}{print $0} NR==3{exit}'`
-echo $produk | awk 'BEGIN {FS=";" ; RS="|"} {print}'
+echo "$produk"
 
-# 2.c
+echo ""
 echo "Nomor 2C"
-IFS='|' read -r -a array <<< $produk
-
-for element in "${array[@]}"
-do
-        echo $temp | awk -v cmpr="$element" 'BEGIN {FS=";" ; RS="|" } ( $2==cmpr ){print $3}' | head -1
-done
+echo $temp | awk -v negara="$country" 'BEGIN { FS= ";" } ;  $1 ~ negara && ($2 ~ /Personal Accessories/ || $2 ~ /Camping Equipment/ || $2 ~ /Outdoor Protection/) && !seen[$3]++  {print $3}' | awk '{print} NR>2{exit}' 
